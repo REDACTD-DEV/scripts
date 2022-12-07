@@ -44,9 +44,9 @@ def hashSort():
             sha256List.append(hash)
         if isValidHash("sha512", hash) == True:
             sha512List.append(hash)
-        if  isValidHash("md5", hash) == False and \
-            isValidHash("sha256", hash) == False and \
-            isValidHash("sha512", hash) == False:
+        if isValidHash("md5", hash) == False and \
+           isValidHash("sha256", hash) == False and \
+           isValidHash("sha512", hash) == False:
             invalidHashList.append(hash)
 
 
