@@ -1,9 +1,13 @@
 import time
-startTime = time.time()
+import os
 import hashlib
+startTime = time.time()
 
-hashFile = open("%USERPROFILE%/Documents/Scripts/hashes.txt", "r")
-wordListFile = "%USERPROFILE%/Documents/Scripts/rockyou.txt"
+hashFile = open(os.path.join(os.environ['USERPROFILE'], 
+                "scripts/hashes.txt"), "r")
+wordListFile = os.path.join(os.environ['USERPROFILE'], 
+                "scripts/rockyou.txt")
+
 
 def isValidHash(hashType, hash):
     match hashType:
@@ -22,11 +26,16 @@ def isValidHash(hashType, hash):
     else:
         return True
 
-md5List = []
-sha256List = []
-sha512List = []
-invalidHashList = []
+
 def hashSort():
+    global md5List 
+    md5List = []
+    global sha256List 
+    sha256List = []
+    global sha512List 
+    sha512List = []
+    global invalidHashList 
+    invalidHashList = []
     for hash in hashFile:
         hash = hash.rstrip()
         if isValidHash("md5", hash) == True:
@@ -35,14 +44,17 @@ def hashSort():
             sha256List.append(hash)
         if isValidHash("sha512", hash) == True:
             sha512List.append(hash)
-        if (isValidHash("md5", hash) == False) and (isValidHash("sha256", hash) == False) and (isValidHash("sha512", hash) == False):
+        if  isValidHash("md5", hash) == False and \
+            isValidHash("sha256", hash) == False and \
+            isValidHash("sha512", hash) == False:
             invalidHashList.append(hash)
+
 
 def crack(wordListFile, hashList, algorithm):
     if hashList:
-        wordlist = open(wordListFile,'rb')
+        wordList = open(wordListFile,'rb')
         crackedHashes = 0
-        for word in wordlist:
+        for word in wordList:
             hash_algorithm = getattr(hashlib, algorithm)()
             word = word.rstrip()
             hash_algorithm.update(word)
@@ -54,8 +66,12 @@ def crack(wordListFile, hashList, algorithm):
                     break
             if crackedHashes == len(hashList):
                 break
-        print(crackedHashes, "out of", len(hashList), algorithm, "hashes cracked")
-    wordlist.close()
+        print(crackedHashes, 
+            "out of",
+            len(hashList), 
+            algorithm,
+            "hashes cracked.")
+        wordList.close()
 
 hashSort()
 crack(wordListFile, md5List, "md5")
@@ -63,7 +79,9 @@ crack(wordListFile, sha256List, "sha256")
 crack(wordListFile, sha512List, "sha512")
 
 if len(invalidHashList) > 0:
-    print("There are", len(invalidHashList), "invalid hashes in the hash file.")
+    print("There are", 
+    len(invalidHashList), 
+    "invalid hashes in the hash file.")
 
 executionTime = (time.time() - startTime)
-print('Execution time in seconds: ' + str(executionTime))
+print('Execution time in seconds: ' + str(executionTime)) 
