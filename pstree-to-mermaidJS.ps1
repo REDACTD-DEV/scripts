@@ -4,7 +4,7 @@ param (
 )
 
 # Reads in the contents of $PSTreeFile, skips the first two lines, removes any empty lines, and converts the remaining content into a CSV format with a tab delimiter.
-$CSV = Get-Content $PSTreeFile | Select-Object -skip 2 | Where-Object {$_ -ne ""} | ConvertFrom-Csv -Delimiter "`t" | Select-Object ImageFileName,PID,PPID,CreateTime,Depth,Index
+$CSV = Get-Content $PSTreeFile | Select-Object -skip 2 | Where-Object {$_ -ne ""} | ConvertFrom-Csv -Delimiter "`t" | Select-Object ImageFileName,PID,PPID,CreateTime,Depth,ExitTime,Index
 
 $index=0
 foreach($line in $CSV){
@@ -18,6 +18,14 @@ foreach($line in $CSV){
     $line.index = $index
     $index++
 }
+
+#Add an astericks to the ImageFileName for all processes that have an exit time
+foreach($line in $CSV){     
+    if($line.ExitTime -ne "N/A"){
+        $line.ImageFileName += "*" 
+    }
+}
+
 if($ProcessID -ne $null){
     # Find all parent PIDs for the specified PID
     $CurrentProcess = $ProcessID
